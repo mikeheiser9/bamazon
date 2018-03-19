@@ -39,18 +39,51 @@ function start() {
     for (i = 0; i < data.length; i++) {
         string.push(data[i].product_name);
     }
-    inquirer.prompt({
-            name: "pickProduct",
-            type: "list",
-            message: "What product are you interested in?",
-            choices: string
-        })
+    inquirer.prompt([{
+                name: "pickProduct",
+                type: "list",
+                message: "What product are you interested in?",
+                choices: string
+            },
+            {
+                name: "pickQuantity",
+                message: "How many would you like to purchase?"
+            },
+            {
+                name: "confirmPurchase",
+                type: "confirm",
+                message: "Would you like to place your order?"
+            }
+        ])
         .then(function (answer) {
-            // based on their answer, either call the bid or the post functions
+            var product;
+
             for (i = 0; i < data.length; i++) {
                 if (answer.pickProduct === data[i].product_name) {
+                    product = data[i];
                     console.log(data[i]);
                 }
             }
+            if (answer.pickQuantity <= product.stock_quantity) {
+                console.log("--------------------------------------------------------------------");
+                console.log("--------------------------------------------------------------------");
+                console.log("You are about to order " + answer.pickQuantity + " of " + answer.pickProduct + "for $" + answer.price * answer.pickQuantity);
+                console.log("--------------------------------------------------------------------");
+                console.log("--------------------------------------------------------------------");
+            } else {
+                console.log("--------------------------------------------------------------------");
+                console.log("--------------------------------------------------------------------");
+                console.log("Sorry there is not enough stock to fulfill your order")
+                console.log("--------------------------------------------------------------------");
+                console.log("--------------------------------------------------------------------");
+                start();
+            }
+
         })
+}
+
+function buy() {
+    if (confirmPurchase){
+        console.log("Congrats your order is confirmed!!")
     }
+}
