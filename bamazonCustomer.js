@@ -49,27 +49,22 @@ function start() {
                 name: "pickQuantity",
                 message: "How many would you like to purchase?"
             },
-            {
-                name: "confirmPurchase",
-                type: "confirm",
-                message: "Would you like to place your order?"
-            }
         ])
         .then(function (answer) {
             var product;
-
+            console.log(answer.pickProduct);
             for (i = 0; i < data.length; i++) {
                 if (answer.pickProduct === data[i].product_name) {
                     product = data[i];
-                    console.log(data[i]);
                 }
             }
             if (answer.pickQuantity <= product.stock_quantity) {
                 console.log("--------------------------------------------------------------------");
                 console.log("--------------------------------------------------------------------");
-                console.log("You are about to order " + answer.pickQuantity + " of " + answer.pickProduct + "for $" + answer.price * answer.pickQuantity);
+                console.log("You have " + answer.pickQuantity + " of " + answer.pickProduct + " in your cart:" + " TOTAL PRICE: $" + product.price * answer.pickQuantity);
                 console.log("--------------------------------------------------------------------");
                 console.log("--------------------------------------------------------------------");
+                confirmPurchase(answer.pickQuantity, answer.pickProduct, product.price, product.stock_quantity);
             } else {
                 console.log("--------------------------------------------------------------------");
                 console.log("--------------------------------------------------------------------");
@@ -82,8 +77,29 @@ function start() {
         })
 }
 
-function buy() {
-    if (confirmPurchase){
-        console.log("Congrats your order is confirmed!!")
+function confirmPurchase(quan, pickPro, price, stock) {
+    inquirer.prompt([{
+        name: "confirmPurchase",
+        type: "confirm",
+        message: "Would you like to place your order?"
     }
-}
+])
+    .then(function (answer) {
+        if (answer.confirmPurchase === true) {
+            console.log("---------------------------------")
+            console.log("Congrats Your purchase is complete!")
+            console.log("Order Summary: " + quan + " of " + pickPro + " TOTAL PRICE: $" + price * quan);
+            console.log("---------------------------------")
+            connection.query("UPDATE products SET ? WHERE ?",   [
+                {
+                  stock_quantity: stock - quan
+                },
+                {
+                  product_name: pickPro
+                }
+              ])   
+        }
+        start();
+       
+    })
+};
