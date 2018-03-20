@@ -37,6 +37,7 @@ function queryAllProducts() {
 function start() {
     var string = [];
     for (i = 0; i < data.length; i++) {
+        
         string.push(data[i].product_name);
     }
     inquirer.prompt([{
